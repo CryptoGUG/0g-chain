@@ -1,7 +1,6 @@
 package dasigners_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/suite"
@@ -44,6 +43,94 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 			genState:   types.DefaultGenesisState(),
 			expectPass: true,
 		},
+		{
+			name: "normal-more-epochs",
+			genState: types.NewGenesisState(types.Params{
+				TokensPerVote:     10,
+				MaxVotesPerSigner: 1024,
+				MaxQuorums:        10,
+				EpochBlocks:       5760,
+				EncodedSlices:     1,
+			}, 0, []*types.Signer{{
+				Account:  "0000000000000000000000000000000000000001",
+				Socket:   "0.0.0.0:1234",
+				PubkeyG1: make([]byte, 64),
+				PubkeyG2: make([]byte, 128),
+			}}, []*types.Quorums{{
+				Quorums: []*types.Quorum{{Signers: []string{"0000000000000000000000000000000000000001"}}},
+			}}),
+			expectPass: true,
+		},
+		{
+			name: "invalid account format",
+			genState: types.NewGenesisState(types.Params{
+				TokensPerVote:     10,
+				MaxVotesPerSigner: 1024,
+				MaxQuorums:        10,
+				EpochBlocks:       5760,
+				EncodedSlices:     1,
+			}, 0, []*types.Signer{{
+				Account:  "0x0000000000000000000000000000000000000001",
+				Socket:   "0.0.0.0:1234",
+				PubkeyG1: make([]byte, 64),
+				PubkeyG2: make([]byte, 128),
+			}}, []*types.Quorums{{
+				Quorums: []*types.Quorum{{Signers: []string{"0x0000000000000000000000000000000000000001"}}},
+			}}),
+			expectPass: false,
+		},
+		{
+			name: "invalid pubkeyG1 format",
+			genState: types.NewGenesisState(types.Params{
+				TokensPerVote:     10,
+				MaxVotesPerSigner: 1024,
+				MaxQuorums:        10,
+				EpochBlocks:       5760,
+				EncodedSlices:     1,
+			}, 0, []*types.Signer{{
+				Account:  "0000000000000000000000000000000000000001",
+				Socket:   "0.0.0.0:1234",
+				PubkeyG1: make([]byte, 63),
+				PubkeyG2: make([]byte, 128),
+			}}, []*types.Quorums{{
+				Quorums: []*types.Quorum{{Signers: []string{"0000000000000000000000000000000000000001"}}},
+			}}),
+			expectPass: false,
+		},
+		{
+			name: "invalid pubkeyG2 format",
+			genState: types.NewGenesisState(types.Params{
+				TokensPerVote:     10,
+				MaxVotesPerSigner: 1024,
+				MaxQuorums:        10,
+				EpochBlocks:       5760,
+				EncodedSlices:     1,
+			}, 0, []*types.Signer{{
+				Account:  "0000000000000000000000000000000000000001",
+				Socket:   "0.0.0.0:1234",
+				PubkeyG1: make([]byte, 64),
+				PubkeyG2: make([]byte, 129),
+			}}, []*types.Quorums{{
+				Quorums: []*types.Quorum{{Signers: []string{"0000000000000000000000000000000000000001"}}},
+			}}),
+			expectPass: false,
+		},
+		{
+			name: "history missing",
+			genState: types.NewGenesisState(types.Params{
+				TokensPerVote:     10,
+				MaxVotesPerSigner: 1024,
+				MaxQuorums:        10,
+				EpochBlocks:       5760,
+				EncodedSlices:     1,
+			}, 0, []*types.Signer{{
+				Account:  "0000000000000000000000000000000000000001",
+				Socket:   "0.0.0.0:1234",
+				PubkeyG1: make([]byte, 64),
+				PubkeyG2: make([]byte, 128),
+			}}, []*types.Quorums{}),
+			expectPass: false,
+		},
 	}
 	for _, tc := range testCases {
 		suite.Run(tc.name, func() {
@@ -66,10 +153,8 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 
 			// Check
 			if tc.expectPass {
-				fmt.Printf("expected: %v\n", tc.genState)
 				expectedJson, err := suite.app.AppCodec().MarshalJSON(tc.genState)
 				suite.Require().NoError(err)
-				fmt.Printf("actual: %v\n", exportedGenState)
 				actualJson, err := suite.app.AppCodec().MarshalJSON(exportedGenState)
 				suite.Require().NoError(err)
 				suite.Equal(expectedJson, actualJson)

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	sdkmath "cosmossdk.io/math"
+	dasignerskeeper "github.com/0glabs/0g-chain/x/dasigners/v1/keeper"
 	tmdb "github.com/cometbft/cometbft-db"
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/libs/log"
@@ -114,6 +115,7 @@ func (tApp TestApp) GetCommitteeKeeper() committeekeeper.Keeper { return tApp.co
 func (tApp TestApp) GetEvmutilKeeper() evmutilkeeper.Keeper     { return tApp.evmutilKeeper }
 func (tApp TestApp) GetEvmKeeper() *evmkeeper.Keeper            { return tApp.evmKeeper }
 func (tApp TestApp) GetFeeMarketKeeper() feemarketkeeper.Keeper { return tApp.feeMarketKeeper }
+func (tApp TestApp) GetDASignersKeeper() dasignerskeeper.Keeper { return tApp.dasignersKeeper }
 
 func (tApp TestApp) GetKVStoreKey(key string) *storetypes.KVStoreKey {
 	return tApp.keys[key]

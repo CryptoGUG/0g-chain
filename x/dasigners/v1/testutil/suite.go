@@ -1,6 +1,7 @@
 package testutil
 
 import (
+	"cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
@@ -10,6 +11,8 @@ import (
 	"github.com/0glabs/0g-chain/chaincfg"
 	"github.com/0glabs/0g-chain/x/dasigners/v1/keeper"
 	"github.com/0glabs/0g-chain/x/dasigners/v1/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"github.com/evmos/ethermint/crypto/ethsecp256k1"
 )
 
 // Suite implements a test suite for the module integration tests
@@ -39,4 +42,28 @@ func (suite *Suite) SetupTest() {
 	queryHandler := suite.Keeper
 	types.RegisterQueryServer(queryHelper, queryHandler)
 	suite.QueryClient = types.NewQueryClient(queryHelper)
+}
+
+func (suite *Suite) AddDelegation(from string, to string, amount math.Int) {
+	accAddr, err := sdk.AccAddressFromHexUnsafe(from)
+	suite.Require().NoError(err)
+	valAddr, err := sdk.ValAddressFromHex(to)
+	suite.Require().NoError(err)
+	validator, found := suite.StakingKeeper.GetValidator(suite.Ctx, valAddr)
+	if !found {
+		consPriv, err := ethsecp256k1.GenerateKey()
+		suite.Require().NoError(err)
+		newValidator, err := stakingtypes.NewValidator(valAddr, consPriv.PubKey(), stakingtypes.Description{})
+		suite.Require().NoError(err)
+		validator = newValidator
+	}
+	validator.Tokens = validator.Tokens.Add(amount)
+	validator.DelegatorShares = validator.DelegatorShares.Add(amount.ToLegacyDec())
+	suite.StakingKeeper.SetValidator(suite.Ctx, validator)
+	bonded := suite.Keeper.GetDelegatorBonded(suite.Ctx, accAddr)
+	suite.StakingKeeper.SetDelegation(suite.Ctx, stakingtypes.Delegation{
+		DelegatorAddress: accAddr.String(),
+		ValidatorAddress: valAddr.String(),
+		Shares:           bonded.Add(amount).ToLegacyDec(),
+	})
 }

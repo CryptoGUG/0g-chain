@@ -6,28 +6,15 @@ import (
 	"github.com/stretchr/testify/suite"
 
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/0glabs/0g-chain/app"
 	"github.com/0glabs/0g-chain/x/dasigners/v1"
-	"github.com/0glabs/0g-chain/x/dasigners/v1/keeper"
+	"github.com/0glabs/0g-chain/x/dasigners/v1/testutil"
 	"github.com/0glabs/0g-chain/x/dasigners/v1/types"
 )
 
 type GenesisTestSuite struct {
-	suite.Suite
-
-	app       app.TestApp
-	ctx       sdk.Context
-	keeper    keeper.Keeper
-	addresses []sdk.AccAddress
-}
-
-func (suite *GenesisTestSuite) SetupTest() {
-	suite.app = app.NewTestApp()
-	suite.keeper = suite.app.GetDASignersKeeper()
-	suite.ctx = suite.app.NewContext(true, tmproto.Header{})
-	_, suite.addresses = app.GeneratePrivKeyAddressPairs(10)
+	testutil.Suite
 }
 
 func (suite *GenesisTestSuite) TestInitGenesis() {
@@ -135,15 +122,15 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 	for _, tc := range testCases {
 		suite.Run(tc.name, func() {
 			// Setup (note: suite.SetupTest is not run before every suite.Run)
-			suite.app = app.NewTestApp()
-			suite.keeper = suite.app.GetDASignersKeeper()
-			suite.ctx = suite.app.NewContext(true, tmproto.Header{})
+			suite.App = app.NewTestApp()
+			suite.Keeper = suite.App.GetDASignersKeeper()
+			suite.Ctx = suite.App.NewContext(true, tmproto.Header{})
 
 			// Run
 			var exportedGenState *types.GenesisState
 			run := func() {
-				dasigners.InitGenesis(suite.ctx, suite.keeper, *tc.genState)
-				exportedGenState = dasigners.ExportGenesis(suite.ctx, suite.keeper)
+				dasigners.InitGenesis(suite.Ctx, suite.Keeper, *tc.genState)
+				exportedGenState = dasigners.ExportGenesis(suite.Ctx, suite.Keeper)
 			}
 			if tc.expectPass {
 				suite.Require().NotPanics(run)
@@ -153,9 +140,9 @@ func (suite *GenesisTestSuite) TestInitGenesis() {
 
 			// Check
 			if tc.expectPass {
-				expectedJson, err := suite.app.AppCodec().MarshalJSON(tc.genState)
+				expectedJson, err := suite.App.AppCodec().MarshalJSON(tc.genState)
 				suite.Require().NoError(err)
-				actualJson, err := suite.app.AppCodec().MarshalJSON(exportedGenState)
+				actualJson, err := suite.App.AppCodec().MarshalJSON(exportedGenState)
 				suite.Require().NoError(err)
 				suite.Equal(expectedJson, actualJson)
 			}

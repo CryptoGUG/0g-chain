@@ -13,11 +13,11 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-type ModuleTestSuite struct {
+type AbciTestSuite struct {
 	testutil.Suite
 }
 
-func (suite *ModuleTestSuite) TestBeginBlock_NotContinuous() {
+func (suite *AbciTestSuite) TestBeginBlock_NotContinuous() {
 	suite.App.InitializeFromGenesisStates()
 	dasigners.InitGenesis(suite.Ctx, suite.Keeper, *types.DefaultGenesisState())
 	params := suite.Keeper.GetParams(suite.Ctx)
@@ -26,7 +26,7 @@ func (suite *ModuleTestSuite) TestBeginBlock_NotContinuous() {
 	}, "block height is not continuous")
 }
 
-func (suite *ModuleTestSuite) TestBeginBlock_Success() {
+func (suite *AbciTestSuite) TestBeginBlock_Success() {
 	suite.App.InitializeFromGenesisStates()
 	dasigners.InitGenesis(suite.Ctx, suite.Keeper, *types.DefaultGenesisState())
 	suite.Keeper.SetParams(suite.Ctx, types.Params{
@@ -134,5 +134,5 @@ func (suite *ModuleTestSuite) TestBeginBlock_Success() {
 }
 
 func TestModuleTestSuite(t *testing.T) {
-	suite.Run(t, new(ModuleTestSuite))
+	suite.Run(t, new(AbciTestSuite))
 }

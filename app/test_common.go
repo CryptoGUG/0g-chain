@@ -55,7 +55,7 @@ var (
 	defaultInitialHeight int64 = 1
 )
 
-const TestChainId = "kavatest_2221-1"
+const TestChainId = "zgchain_8888-1"
 
 // TestApp is a simple wrapper around an App. It exposes internal keepers for use in integration tests.
 // This file also contains test helpers. Ideally they would be in separate package.

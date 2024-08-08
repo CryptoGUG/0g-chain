@@ -18,7 +18,7 @@ type AbciTestSuite struct {
 }
 
 func (suite *AbciTestSuite) TestBeginBlock_NotContinuous() {
-	suite.App.InitializeFromGenesisStates()
+	// suite.App.InitializeFromGenesisStates()
 	dasigners.InitGenesis(suite.Ctx, suite.Keeper, *types.DefaultGenesisState())
 	params := suite.Keeper.GetParams(suite.Ctx)
 	suite.Require().Panics(func() {
@@ -27,7 +27,7 @@ func (suite *AbciTestSuite) TestBeginBlock_NotContinuous() {
 }
 
 func (suite *AbciTestSuite) TestBeginBlock_Success() {
-	suite.App.InitializeFromGenesisStates()
+	// suite.App.InitializeFromGenesisStates()
 	dasigners.InitGenesis(suite.Ctx, suite.Keeper, *types.DefaultGenesisState())
 	suite.Keeper.SetParams(suite.Ctx, types.Params{
 		TokensPerVote:     10,
@@ -133,6 +133,6 @@ func (suite *AbciTestSuite) TestBeginBlock_Success() {
 	suite.Assert().EqualValues(cnt, 10)
 }
 
-func TestModuleTestSuite(t *testing.T) {
+func TestAbciSuite(t *testing.T) {
 	suite.Run(t, new(AbciTestSuite))
 }

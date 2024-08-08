@@ -31,9 +31,10 @@ type Suite struct {
 func (suite *Suite) SetupTest() {
 	chaincfg.SetSDKConfig()
 	suite.App = app.NewTestApp()
+	suite.App.InitializeFromGenesisStates()
 	suite.Keeper = suite.App.GetDASignersKeeper()
 	suite.StakingKeeper = suite.App.GetStakingKeeper()
-	suite.Ctx = suite.App.NewContext(true, tmproto.Header{})
+	suite.Ctx = suite.App.NewContext(true, tmproto.Header{Height: 1, ChainID: app.TestChainId})
 	_, accAddresses := app.GeneratePrivKeyAddressPairs(10)
 	suite.Addresses = accAddresses
 

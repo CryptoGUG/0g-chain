@@ -1,7 +1,6 @@
 package types_test
 
 import (
-	fmt "fmt"
 	"math/big"
 	"testing"
 
@@ -25,10 +24,5 @@ func Test_ValidateSignature(t *testing.T) {
 	assert.NoError(t, signer.Validate())
 	hash := types.PubkeyRegistrationHash(common.HexToAddress("0x9685C4EB29309820CDC62663CC6CC82F3D42E964"), big.NewInt(8888))
 	signature := new(bn254.G1Affine).ScalarMultiplication(hash, big.NewInt(1))
-	fmt.Printf(
-		"registration signature G1 X: %v, Y: %v\n ",
-		signature.X.BigInt(new(big.Int)),
-		signature.Y.BigInt(new(big.Int)),
-	)
 	assert.Equal(t, signer.ValidateSignature(hash, signature), true)
 }

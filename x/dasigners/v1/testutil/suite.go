@@ -1,10 +1,13 @@
 package testutil
 
 import (
+	"strings"
+
 	"cosmossdk.io/math"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/suite"
 
 	"github.com/0glabs/0g-chain/app"
@@ -34,7 +37,22 @@ func (suite *Suite) SetupTest() {
 	suite.App.InitializeFromGenesisStates()
 	suite.Keeper = suite.App.GetDASignersKeeper()
 	suite.StakingKeeper = suite.App.GetStakingKeeper()
-	suite.Ctx = suite.App.NewContext(true, tmproto.Header{Height: 1, ChainID: app.TestChainId})
+
+	// make block header
+	privkey, _ := ethsecp256k1.GenerateKey()
+	consAddress := sdk.ConsAddress(privkey.PubKey().Address())
+	key, err := privkey.ToECDSA()
+	suite.Assert().NoError(err)
+	hexAddr := strings.ToLower(crypto.PubkeyToAddress(key.PublicKey).Hex()[2:])
+	valAddr, err := sdk.ValAddressFromHex(hexAddr)
+	suite.Assert().NoError(err)
+	suite.Ctx = suite.App.NewContext(true, tmproto.Header{Height: 1, ChainID: app.TestChainId, ProposerAddress: consAddress})
+	newValidator, err := stakingtypes.NewValidator(valAddr, privkey.PubKey(), stakingtypes.Description{})
+	suite.Assert().NoError(err)
+	err = suite.StakingKeeper.SetValidatorByConsAddr(suite.Ctx, newValidator)
+	suite.Assert().NoError(err)
+	suite.StakingKeeper.SetValidator(suite.Ctx, newValidator)
+
 	_, accAddresses := app.GeneratePrivKeyAddressPairs(10)
 	suite.Addresses = accAddresses
 

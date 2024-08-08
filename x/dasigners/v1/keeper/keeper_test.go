@@ -113,7 +113,7 @@ func (suite *KeeperTestSuite) testUpdateSocket(signer *types.Signer) {
 	))
 }
 
-func (suite *KeeperTestSuite) testRegisterEpochInvalidSignature(signer *types.Signer) {
+func (suite *KeeperTestSuite) testRegisterEpochInvalidSignature() {
 	sk := big.NewInt(2)
 	hash := types.EpochRegistrationHash(common.HexToAddress(signer1), 1, big.NewInt(8888))
 	signature := new(bn254.G1Affine).ScalarMultiplication(hash, sk)
@@ -322,7 +322,7 @@ func (suite *KeeperTestSuite) Test_Keeper() {
 	signerOne := suite.testRegisterSignerSuccess()
 	suite.testQuerySigner(signerOne)
 	suite.testUpdateSocket(signerOne)
-	suite.testRegisterEpochInvalidSignature(signerOne)
+	suite.testRegisterEpochInvalidSignature()
 	suite.testRegisterEpochSuccess()
 	suite.secondSigner()
 	suite.newEpoch(params)

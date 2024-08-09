@@ -1,7 +1,6 @@
 package dasigners_test
 
 import (
-	"fmt"
 	"math/big"
 	"strings"
 	"testing"
@@ -291,7 +290,6 @@ func (suite *DASignersTestSuite) queryGetAggPkG1(testSigner *testutil.TestSigner
 	suite.Assert().NoError(err)
 	out, err := suite.abi.Methods["getAggPkG1"].Outputs.Unpack(bz)
 	suite.Assert().NoError(err)
-	fmt.Printf("%v\n", out[0])
 	return struct {
 		AggPkG1 dasignersprecompile.BN254G1Point
 		Total   *big.Int

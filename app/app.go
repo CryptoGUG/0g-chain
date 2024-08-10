@@ -669,7 +669,9 @@ func NewApp(
 		evmutil.NewAppModule(app.evmutilKeeper, app.bankKeeper, app.accountKeeper),
 		// nil InflationCalculationFn, use SDK's default inflation function
 		mint.NewAppModule(appCodec, app.mintKeeper, app.accountKeeper, nil, mintSubspace),
+		council.NewAppModule(app.CouncilKeeper),
 		ibcwasm.NewAppModule(app.ibcWasmClientKeeper),
+		dasigners.NewAppModule(app.dasignersKeeper, *app.stakingKeeper),
 	)
 
 	// Warning: Some begin blockers must run before others. Ensure the dependencies are understood before modifying this list.
@@ -711,9 +713,11 @@ func NewApp(
 		paramstypes.ModuleName,
 		authz.ModuleName,
 		evmutiltypes.ModuleName,
+		counciltypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
+		dasignerstypes.ModuleName,
 	)
 
 	// Warning: Some end blockers must run before others. Ensure the dependencies are understood before modifying this list.
@@ -745,9 +749,11 @@ func NewApp(
 		authz.ModuleName,
 		evmutiltypes.ModuleName,
 		minttypes.ModuleName,
+		counciltypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		ibcwasmtypes.ModuleName,
+		dasignerstypes.ModuleName,
 	)
 
 	// Warning: Some init genesis methods must run before others. Ensure the dependencies are understood before modifying this list
@@ -777,10 +783,12 @@ func NewApp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		validatorvestingtypes.ModuleName,
+		counciltypes.ModuleName,
 		consensusparamtypes.ModuleName,
 		packetforwardtypes.ModuleName,
 		crisistypes.ModuleName, // runs the invariants at genesis, should run after other modules
 		ibcwasmtypes.ModuleName,
+		dasignerstypes.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.crisisKeeper)

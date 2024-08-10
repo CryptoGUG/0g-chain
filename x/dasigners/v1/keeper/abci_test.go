@@ -21,8 +21,20 @@ func (suite *AbciTestSuite) TestBeginBlock_NotContinuous() {
 	// dasigners.InitGenesis(suite.Ctx, suite.Keeper, *types.DefaultGenesisState())
 	params := suite.Keeper.GetParams(suite.Ctx)
 	suite.Assert().EqualValues(params, types.DefaultGenesisState().Params)
-	suite.Require().Panics(func() {
-		suite.Keeper.BeginBlock(suite.Ctx.WithBlockHeight(int64(params.EpochBlocks*2)), abci.RequestBeginBlock{})
+
+	epoch, err := suite.Keeper.GetEpochNumber(suite.Ctx)
+	suite.Require().NoError(err)
+	suite.Assert().EqualValues(epoch, 0)
+
+	suite.Assert().NotPanics(func() {
+		suite.Keeper.BeginBlock(suite.Ctx.WithBlockHeight(int64(params.EpochBlocks*10)), abci.RequestBeginBlock{})
+	})
+	epoch, err = suite.Keeper.GetEpochNumber(suite.Ctx)
+	suite.Require().NoError(err)
+	suite.Assert().EqualValues(epoch, 10)
+
+	suite.Assert().Panics(func() {
+		suite.Keeper.BeginBlock(suite.Ctx.WithBlockHeight(int64(params.EpochBlocks*9)), abci.RequestBeginBlock{})
 	}, "block height is not continuous")
 }
 

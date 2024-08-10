@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"bytes"
+	"fmt"
 	"math/big"
 	"sort"
 
@@ -33,6 +34,7 @@ func (k Keeper) generateOneEpoch(ctx sdk.Context) bool {
 	}
 	expectedEpoch = epochNumber + 1
 	// new epoch
+	k.Logger(ctx).Info(fmt.Sprintf("[BeginBlock] generating epoch %v", expectedEpoch))
 	registrations := []Ballot{}
 	k.IterateRegistrations(ctx, expectedEpoch, func(account string, signature []byte) (stop bool) {
 		registrations = append(registrations, Ballot{
@@ -108,6 +110,7 @@ func (k Keeper) generateOneEpoch(ctx sdk.Context) bool {
 	// save to store
 	k.SetEpochQuorums(ctx, expectedEpoch, quorums)
 	k.SetEpochNumber(ctx, expectedEpoch)
+	k.Logger(ctx).Info(fmt.Sprintf("[BeginBlock] epoch %v generated, with %v quorums", expectedEpoch, len(quorums.Quorums)))
 	return true
 }
 

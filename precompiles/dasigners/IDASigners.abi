@@ -52,6 +52,46 @@
     "anonymous": false,
     "inputs": [
       {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "tokensPerVote",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxVotesPerSigner",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxQuorums",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "epochBlocks",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "encodedSlices",
+            "type": "uint256"
+          }
+        ],
+        "indexed": false,
+        "internalType": "struct IDASigners.Params",
+        "name": "params",
+        "type": "tuple"
+      }
+    ],
+    "name": "ParamsUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "signer",
@@ -263,6 +303,46 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "params",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "tokensPerVote",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxVotesPerSigner",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "maxQuorums",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "epochBlocks",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "encodedSlices",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct IDASigners.Params",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",

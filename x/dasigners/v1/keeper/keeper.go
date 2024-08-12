@@ -22,6 +22,7 @@ type Keeper struct {
 	storeKey      storetypes.StoreKey
 	cdc           codec.BinaryCodec
 	stakingKeeper types.StakingKeeper
+	authority     string // the address capable of changing signers params. Should be the gov module account
 }
 
 // NewKeeper creates a new das Keeper instance
@@ -29,11 +30,13 @@ func NewKeeper(
 	storeKey storetypes.StoreKey,
 	cdc codec.BinaryCodec,
 	stakingKeeper types.StakingKeeper,
+	authority string,
 ) Keeper {
 	return Keeper{
 		storeKey:      storeKey,
 		cdc:           cdc,
 		stakingKeeper: stakingKeeper,
+		authority:     authority,
 	}
 }
 

@@ -27,7 +27,7 @@ type IDASignersSignerDetail = struct {
 	PkG2   BN254G2Point   "json:\"pkG2\""
 }
 
-type IDASignersParams struct {
+type IDASignersParams = struct {
 	TokensPerVote     *big.Int "json:\"tokensPerVote\""
 	MaxVotesPerSigner *big.Int "json:\"maxVotesPerSigner\""
 	MaxQuorums        *big.Int "json:\"maxQuorums\""
